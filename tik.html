@@ -2,568 +2,1165 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TokSave · TikTok video downloader</title>
-    <!-- Font Awesome 6 (free) for clean icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Content Unlocker | Watch Ads to Continue</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
-
+        
         body {
-            background: linear-gradient(145deg, #f8faff 0%, #f0f4fe 100%);
+            background-color: #0f172a;
+            color: #fff;
             min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Mobile-optimized Configuration Section */
+        .config-section {
+            background: rgba(30, 41, 59, 0.98);
+            border-radius: 16px 16px 0 0;
+            padding: 20px;
+            margin: 0;
+            border: none;
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            top: auto;
+            z-index: 2000;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.3s ease;
+        }
+        
+        .config-section.show {
+            display: block;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        
+        .config-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            color: #60a5fa;
+            font-size: 1.3rem;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #334155;
+        }
+        
+        .config-form {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 1.5rem;
+            gap: 15px;
         }
-
-        .main-card {
-            max-width: 1000px;
-            width: 100%;
-            background: rgba(255,255,255,0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: 42px;
-            box-shadow: 0 25px 50px -12px rgba(0,10,30,0.25), inset 0 1px 2px rgba(255,255,255,0.6);
-            padding: 2rem 2rem 2.5rem;
-            border: 1px solid rgba(255,255,255,0.5);
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        
+        .form-group label {
+            color: #94a3b8;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .form-group input, .form-group select {
+            background: #1e293b;
+            border: 1px solid #475569;
+            color: white;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 1rem;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        
+        .form-group select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            padding-right: 40px;
+        }
+        
+        .config-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .config-btn {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
             transition: all 0.2s ease;
         }
-
-        .header {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 1.8rem;
-        }
-
-        .logo-icon {
-            background: #121212;
+        
+        .save-config {
+            background: linear-gradient(to right, #10b981, #059669);
             color: white;
-            width: 52px;
-            height: 52px;
-            border-radius: 24px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        .close-config {
+            background: linear-gradient(to right, #ef4444, #dc2626);
+            color: white;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+        
+        .config-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .config-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(to right, #3b82f6, #1e40af);
+            color: white;
+            border: none;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 1001;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
-            box-shadow: 0 10px 15px -5px rgba(0,0,0,0.2);
+            font-size: 1.5rem;
+            box-shadow: 0 6px 16px rgba(30, 64, 175, 0.5);
+            transition: all 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
         }
-
-        .logo-icon i {
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        
+        .config-toggle:active {
+            transform: scale(0.9);
         }
-
-        .header h1 {
-            font-size: 2.2rem;
-            font-weight: 600;
-            letter-spacing: -0.02em;
-            background: linear-gradient(135deg, #1e293b, #2d3b5a);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .header h1 span {
-            font-weight: 400;
-            background: linear-gradient(135deg, #64748b, #475569);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 1.8rem;
-        }
-
-        .subhead {
-            color: #334155;
-            font-size: 1rem;
-            font-weight: 400;
-            margin-left: 0.3rem;
-            margin-bottom: 2.2rem;
+        
+        /* Mobile-optimized Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to right, #1e40af, #3b82f6);
+            padding: 12px 16px;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: #e9edf8;
-            padding: 0.5rem 1.2rem;
-            border-radius: 100px;
-            width: fit-content;
-            border: 1px solid rgba(255,255,255,0.9);
+            flex-direction: column;
+            gap: 10px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
-
-        .subhead i {
-            color: #2563eb;
-            font-size: 0.9rem;
-        }
-
-        /* input row */
-        .url-box {
-            background: white;
-            border-radius: 100px;
-            padding: 0.4rem 0.4rem 0.4rem 1.8rem;
+        
+        .header-top {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 12px rgba(0,20,50,0.08);
-            border: 1px solid rgba(0,0,0,0.04);
-            margin-bottom: 2.4rem;
-            transition: box-shadow 0.15s;
         }
-
-        .url-box:focus-within {
-            box-shadow: 0 8px 20px rgba(37,99,235,0.12), 0 0 0 3px rgba(37,99,235,0.15);
-            border-color: transparent;
-        }
-
-        .url-box i {
-            color: #6b7a8f;
-            font-size: 1.2rem;
-        }
-
-        .url-box input {
-            flex: 1;
-            border: none;
-            padding: 1rem 1rem;
-            font-size: 1.1rem;
-            background: transparent;
-            outline: none;
-            color: #0f1825;
-            font-weight: 450;
-        }
-
-        .url-box input::placeholder {
-            color: #9aa9bb;
-            font-weight: 350;
-            letter-spacing: -0.01em;
-        }
-
-        .url-box button {
-            background: #0b1423;
-            border: none;
-            color: white;
-            font-weight: 550;
-            font-size: 1.1rem;
-            padding: 0.9rem 2.2rem;
-            border-radius: 80px;
-            cursor: pointer;
+        
+        .header-title {
             display: flex;
             align-items: center;
             gap: 8px;
-            transition: all 0.15s;
-            box-shadow: 0 10px 18px -8px #0b142380;
-            border: 1px solid #2f3e5a;
-            letter-spacing: -0.01em;
+            font-size: 0.9rem;
         }
-
-        .url-box button:hover {
-            background: #1a2740;
-            transform: scale(0.98);
-            box-shadow: 0 4px 12px -4px #0b1423;
-        }
-
-        .url-box button i {
-            color: #ffdd99;
+        
+        .header-title i {
             font-size: 1rem;
+            color: #fbbf24;
         }
-
-        /* sample links */
-        .quick-samples {
+        
+        .header h1 {
+            font-size: 1rem;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+        
+        .unlock-btn-header {
+            background: linear-gradient(to right, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: 30px;
+            cursor: pointer;
             display: flex;
-            flex-wrap: wrap;
             align-items: center;
-            gap: 1rem 1.8rem;
-            margin-bottom: 2.5rem;
-            font-size: 0.95rem;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+            white-space: nowrap;
+            min-width: 130px;
         }
-
-        .sample-label {
-            color: #3f4e67;
-            font-weight: 500;
+        
+        .unlock-btn-header:active {
+            transform: scale(0.96);
+        }
+        
+        .unlock-btn-header:disabled {
+            background: linear-gradient(to right, #475569, #64748b);
+            box-shadow: none;
+            opacity: 0.7;
+            transform: none;
+        }
+        
+        .header-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            justify-content: center;
+        }
+        
+        .timer-container {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 8px 16px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            flex: 1;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+        
+        .timer {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #fbbf24;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .ads-counter {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            white-space: nowrap;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+        
+        /* Ad Content Area - Mobile Optimized */
+        .content-container {
+            margin-top: 120px;
+            height: calc(100vh - 120px);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .ad-frame-container {
+            flex: 1;
+            background-color: #1e293b;
+            position: relative;
+            overflow: hidden;
+            border-radius: 0;
+            cursor: pointer;
+        }
+        
+        .ad-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background-color: white;
+        }
+        
+        .ad-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(30, 41, 59, 0.98));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+            z-index: 10;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+        
+        .ad-overlay.hidden {
+            display: none;
+        }
+        
+        .overlay-icon {
+            font-size: 3.5rem;
+            color: #3b82f6;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .overlay-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #fbbf24;
+            font-weight: 700;
+        }
+        
+        .overlay-text {
+            font-size: 1rem;
+            margin-bottom: 25px;
+            max-width: 300px;
+            line-height: 1.5;
+            color: #cbd5e1;
+            padding: 0 15px;
+        }
+        
+        .loading-bar {
+            width: 90%;
+            max-width: 280px;
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+        
+        .loading-progress {
+            height: 100%;
+            background: linear-gradient(to right, #3b82f6, #60a5fa);
+            width: 0%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        
+        /* Ad Indicators - Mobile Optimized */
+        .ad-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 12px 16px;
+            padding: 0;
+        }
+        
+        .ad-indicator {
+            flex: 1;
+            height: 8px;
+            border-radius: 20px;
+            background-color: #475569;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ad-indicator.active {
+            background-color: #3b82f6;
+            box-shadow: 0 0 15px #3b82f6;
+            transform: scaleY(1.2);
+        }
+        
+        .ad-indicator.completed {
+            background-color: #10b981;
+        }
+        
+        .ad-indicator-text {
+            display: none;
+        }
+        
+        /* Auto Engagement Status */
+        .engagement-status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid #3b82f6;
+            color: #60a5fa;
+            padding: 6px 12px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            z-index: 15;
             display: flex;
             align-items: center;
             gap: 5px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            font-weight: 500;
         }
-
-        .sample-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.7rem;
+        
+        .engagement-status.hidden {
+            display: none;
         }
-
-        .sample-link {
-            background: white;
-            padding: 0.5rem 1.4rem;
-            border-radius: 40px;
-            color: #1a2b3e;
-            text-decoration: none;
-            font-weight: 480;
-            border: 1px solid #d9e1ef;
-            transition: all 0.1s;
-            box-shadow: 0 2px 5px #d9e1ef;
-            font-size: 0.9rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
+        
+        /* Instructions Panel - Mobile Optimized */
+        .instructions-panel {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.98), rgba(15, 23, 42, 0.98));
+            border-radius: 16px;
+            padding: 18px;
+            margin: 10px 16px;
+            border-left: 4px solid #3b82f6;
+            display: none;
+            position: absolute;
+            top: 130px;
+            left: 0;
+            right: 0;
+            z-index: 20;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
         }
-
-        .sample-link i {
-            color: #2563eb;
-            font-size: 0.75rem;
-        }
-
-        .sample-link:hover {
-            background: #eef3fd;
-            border-color: #2563eb40;
-            transform: translateY(-1px);
-        }
-
-        /* result card (video player + download) */
-        .result-area {
-            background: rgba(255,255,255,0.6);
-            backdrop-filter: blur(8px);
-            border-radius: 36px;
-            padding: 1.8rem 1.8rem 1.8rem;
-            border: 1px solid rgba(255,255,255,0.7);
-            box-shadow: inset 0 1px 4px white, 0 10px 20px -12px #1e293b;
-            transition: opacity 0.2s ease;
-        }
-
-        .placeholder-message {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 0.8rem;
-            padding: 2.2rem 1rem;
-            color: #4a607a;
-            background: #eef3fc;
-            border-radius: 28px;
-            border: 2px dashed #b7c9e2;
-        }
-
-        .placeholder-message i {
-            font-size: 2.8rem;
-            color: #8199b6;
-            opacity: 0.7;
-        }
-
-        .video-wrapper {
-            width: 100%;
-            border-radius: 24px;
-            overflow: hidden;
-            background: #0b101a;
-            box-shadow: 0 20px 30px -12px black;
-            margin-bottom: 1.5rem;
-        }
-
-        video {
-            width: 100%;
-            max-height: 480px;
+        
+        .instructions-panel.show {
             display: block;
-            background: #050a13;
-            outline: none;
+            animation: slideDown 0.3s ease;
         }
-
-        .download-panel {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
-            background: white;
-            padding: 1rem 1.8rem;
-            border-radius: 60px;
-            border: 1px solid #e2eaf5;
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
-        .video-meta {
+        
+        .instructions-title {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 10px;
+            margin-bottom: 8px;
+            color: #60a5fa;
+            font-size: 0.95rem;
         }
-
-        .video-meta i {
-            font-size: 2rem;
-            color: #e1305c; /* tiktok vibe */
-        }
-
-        .video-meta span {
-            font-weight: 550;
-            color: #0f1825;
-        }
-
-        .video-meta small {
-            color: #667c99;
-            font-weight: 400;
-        }
-
-        .download-btn {
-            background: #16a34a;
-            color: white;
-            border: none;
-            padding: 0.9rem 2.2rem;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            transition: 0.15s;
-            box-shadow: 0 6px 14px -6px #15803d;
-            border: 1px solid #86efac30;
-        }
-
-        .download-btn i {
-            font-size: 1.3rem;
-            color: #f0fdf4;
-        }
-
-        .download-btn:hover {
-            background: #15803d;
-            transform: scale(0.98);
-            box-shadow: 0 10px 18px -8px #14532d;
-        }
-
-        .footer-note {
-            margin-top: 2rem;
-            text-align: center;
-            color: #5a6e88;
+        
+        .instructions-panel p {
             font-size: 0.9rem;
-            border-top: 1px solid #dce5f2;
-            padding-top: 1.5rem;
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            flex-wrap: wrap;
+            line-height: 1.5;
+            color: #cbd5e1;
         }
-
-        .footer-note span i {
-            color: #f97316;
+        
+        /* Footer - Mobile Optimized */
+        .footer {
+            background-color: #1e293b;
+            padding: 12px;
+            text-align: center;
+            border-top: 1px solid #334155;
+            font-size: 0.75rem;
+            color: #94a3b8;
         }
-
-        /* utility */
-        .hidden {
-            display: none !important;
+        
+        /* Animation for auto-click */
+        @keyframes autoClickPulse {
+            0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5); }
+            70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
         }
-
-        .text-small {
-            font-size: 0.85rem;
+        
+        .auto-click-active {
+            animation: autoClickPulse 2s infinite;
+        }
+        
+        /* Completion animation */
+        @keyframes pulseGreen {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+        
+        .unlock-btn-header.unlocked {
+            animation: pulseGreen 2s infinite;
+        }
+        
+        /* TikTok special handling message */
+        .tiktok-message {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #ff0050;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            text-align: center;
+            z-index: 20;
+            border: 1px solid #ff0050;
+            display: none;
+        }
+        
+        .tiktok-message.show {
+            display: block;
+            animation: fadeInOut 3s ease;
+        }
+        
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; }
         }
     </style>
 </head>
 <body>
-    <div class="main-card">
-        <div class="header">
-            <div class="logo-icon">
-                <i class="fab fa-tiktok"></i>
+    <!-- Configuration Section (Hidden by default) -->
+    <div class="config-section" id="configSection">
+        <div class="config-title">
+            <i class="fas fa-cog"></i>
+            <h3>Settings</h3>
+        </div>
+        <div class="config-form" id="configForm">
+            <div class="form-group">
+                <label for="totalAds">Total Ads</label>
+                <input type="number" id="totalAds" min="1" max="10" value="3">
             </div>
-            <h1>TokSave <span>✦</span></h1>
-        </div>
-        <div class="subhead">
-            <i class="fas fa-link"></i> 
-            <span>Paste TikTok video link — no watermark, direct download</span>
-        </div>
-
-        <!-- URL input -->
-        <div class="url-box">
-            <i class="fas fa-globe"></i>
-            <input type="url" id="tiktokUrlInput" placeholder="https://www.tiktok.com/@user/video/1234567890" value="https://www.tiktok.com/@scout2015/video/7123456789012345678?is_from_webapp=1">
-            <button id="fetchVideoBtn"><i class="fas fa-download"></i> Get video</button>
-        </div>
-
-        <!-- quick samples -->
-        <div class="quick-samples">
-            <div class="sample-label"><i class="fas fa-mouse-pointer"></i> try example:</div>
-            <div class="sample-buttons">
-                <a href="#" class="sample-link" data-sample="https://www.tiktok.com/@scout2015/video/7123456789012345678"><i class="fab fa-tiktok"></i> scout @scout2015</a>
-                <a href="#" class="sample-link" data-sample="https://www.tiktok.com/@charlidamelio/video/6987654321234567890"><i class="fab fa-tiktok"></i> charli</a>
-                <a href="#" class="sample-link" data-sample="https://www.tiktok.com/@khaby.lame/video/7234567890123456789"><i class="fab fa-tiktok"></i> khaby.lame</a>
+            <div class="form-group">
+                <label for="timePerAd">Time Per Ad (seconds)</label>
+                <input type="number" id="timePerAd" min="5" max="60" value="10">
+            </div>
+            <div class="form-group">
+                <label for="videoUrl">Video URL</label>
+                <input type="text" id="videoUrl" value="https://t.me/Salalihiniyasl_bot?start=BQADAQADQhEAAqDtgEc3bO3u8eHNTxYE">
+            </div>
+            <div class="form-group">
+                <label for="adUrl1">Ad URL 1</label>
+                <input type="text" id="adUrl1" value="https://www.effectivegatecpm.com/i9q1y7nvv?key=ac01236d2cc3992387c55fe1f97dce50">
+            </div>
+            <div class="form-group">
+                <label for="adUrl2">Ad URL 2</label>
+                <input type="text" id="adUrl2" value="https://www.effectivegatecpm.com/zv20wxy0?key=fc320d9845eafdf29ef8f630bff6b872">
+            </div>
+            <div class="form-group">
+                <label for="adUrl3">Ad URL 3</label>
+                <input type="text" id="adUrl3" value="https://www.effectivegatecpm.com/tzrrbk2dri?key=b3b5c86d1cf0f8c4ebca90d9cfe0f4aa">
+            </div>
+            <div class="form-group">
+                <label for="instructionsText">Instructions</label>
+                <input type="text" id="instructionsText" value="රැදි සිටින්න …… : Link එක ලබා ගැනිම සදහා දැන්විම් 03ක් නැරඹිම සිදුකල යුතුය">
+            </div>
+            <div class="form-group">
+                <label for="engagementSimulation">Auto Engagement</label>
+                <select id="engagementSimulation">
+                    <option value="true">Enabled</option>
+                    <option value="false">Disabled</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="clickDelay">Auto Click Delay (seconds)</label>
+                <input type="number" id="clickDelay" min="1" max="30" value="5">
+            </div>
+            <div class="config-buttons">
+                <button type="button" class="config-btn save-config" id="saveConfig">Save</button>
+                <button type="button" class="config-btn close-config" id="closeConfig">Close</button>
             </div>
         </div>
-
-        <!-- result card with video player -->
-        <div class="result-area" id="resultArea">
-            <!-- placeholder when no video loaded -->
-            <div id="placeholderMessage" class="placeholder-message">
-                <i class="fas fa-video"></i>
-                <p>Your video preview will appear here</p>
-                <span class="text-small" style="color:#5f7993;">no watermark · ready to download</span>
+    </div>
+    
+    <!-- Config Toggle Button -->
+    <button class="config-toggle" id="configToggle">
+        <i class="fas fa-cog"></i>
+    </button>
+    
+    <!-- Fixed Header with Mobile Layout -->
+    <div class="header">
+        <div class="header-top">
+            <div class="header-title">
+                <i class="fas fa-lock"></i>
+                <h1>රැදි සිටින්න</h1>
             </div>
-
-            <!-- actual video player + download (hidden initially) -->
-            <div id="videoContainer" class="hidden">
-                <div class="video-wrapper">
-                    <video id="videoPlayer" controls playsinline crossorigin="anonymous">
-                        <source src="" type="video/mp4" id="videoSource">
-                        Your browser does not support the video tag.
-                    </video>
+            
+            <!-- SMALL GREEN GO TO VIDEO BUTTON -->
+            <button class="unlock-btn-header" id="unlockButtonHeader" disabled>
+                <i class="fas fa-lock"></i> GO TO VIDEO
+            </button>
+        </div>
+        
+        <div class="header-info">
+            <div class="timer-container">
+                <i class="far fa-clock"></i>
+                <span class="timer" id="timer">15</span>
+            </div>
+            
+            <div class="ads-counter">
+                Ad <span id="currentAd">1</span>/<span id="totalAdsDisplay">3</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Instructions Panel -->
+    <div class="instructions-panel" id="instructionsPanel">
+        <div class="instructions-title">
+            <i class="fas fa-info-circle"></i>
+            <h3>Instructions</h3>
+        </div>
+        <p id="instructionsTextDisplay">රැදි සිටින්න …… : Link එක ලබා ගැනිම සදහා දැන්විම් 03ක් නැරඹිම සිදුකල යුතුය</p>
+    </div>
+    
+    <!-- Ad Content Area -->
+    <div class="content-container">
+        <div class="ad-frame-container" id="adContainer">
+            <!-- Engagement Status -->
+            <div class="engagement-status hidden" id="engagementStatus">
+                <i class="fas fa-robot"></i>
+                <span>Auto Active</span>
+            </div>
+            
+            <!-- TikTok Message -->
+            <div class="tiktok-message" id="tiktokMessage">
+                <i class="fab fa-tiktok"></i> Opening TikTok...
+            </div>
+            
+            <!-- Overlay shown between ads -->
+            <div class="ad-overlay" id="adOverlay">
+                <div class="overlay-icon">
+                    <i class="fas fa-ad"></i>
                 </div>
-                <div class="download-panel" id="downloadPanel">
-                    <div class="video-meta">
-                        <i class="fab fa-tiktok"></i>
-                        <div>
-                            <span>TikTok video</span><br>
-                            <small>no watermark · mp4</small>
-                        </div>
-                    </div>
-                    <button class="download-btn" id="downloadVideoBtn">
-                        <i class="fas fa-arrow-down"></i> Download
-                    </button>
+                <div class="overlay-title">Please Wait</div>
+                <div class="overlay-text" id="overlayText">Preparing ad #1 of 3...</div>
+                <div class="loading-bar">
+                    <div class="loading-progress" id="loadingProgress"></div>
                 </div>
             </div>
+            
+            <!-- Iframe for loading ad URLs -->
+            <iframe class="ad-frame" id="adFrame" allow="autoplay; encrypted-media" allowfullscreen sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
         </div>
-
-        <div class="footer-note">
-            <span><i class="fas fa-check-circle"></i> No watermark</span>
-            <span><i class="fas fa-bolt"></i> Fast processing</span>
-            <span><i class="fas fa-shield-alt"></i> Private & secure</span>
-        </div>
+        
+        <!-- Ad Status Indicators -->
+        <div class="ad-indicators" id="adIndicators"></div>
+    </div>
+    
+    <!-- Footer -->
+    <div class="footer">
+        <p>Ads 3/3 required to unlock</p>
     </div>
 
     <script>
-        (function() {
-            // DOM elements
-            const urlInput = document.getElementById('tiktokUrlInput');
-            const fetchBtn = document.getElementById('fetchVideoBtn');
-            const placeholder = document.getElementById('placeholderMessage');
-            const videoContainer = document.getElementById('videoContainer');
-            const videoPlayer = document.getElementById('videoPlayer');
-            const videoSource = document.getElementById('videoSource');
-            const downloadBtn = document.getElementById('downloadVideoBtn');
-
-            // fake demo video URL (public sample, CORS-friendly if possible)
-            // we use a couple of nice demo videos that are actually mp4 files (short, loop, safe)
-            const DEMO_VIDEO_URLS = [
-                'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',  // 15s
-                'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
-                'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4'
-            ];
-
-            // just for mapping sample links to different videos (so it feels like different tikoks)
-            function getDemoVideoForUrl(tikTokUrl) {
-                // simple hash to pick from demo urls consistently but not important
-                let hash = 0;
-                if (tikTokUrl) {
-                    for (let i = 0; i < tikTokUrl.length; i++) {
-                        hash = ((hash << 5) - hash) + tikTokUrl.charCodeAt(i);
-                        hash |= 0; // Convert to 32bit integer
-                    }
-                }
-                const index = Math.abs(hash) % DEMO_VIDEO_URLS.length;
-                return DEMO_VIDEO_URLS[index];
+        // Configuration
+        const DEFAULT_CONFIG = {
+            totalAds: 3,
+            timePerAd: 10,
+            videoUrl: "https://t.me/Salalihiniyasl_bot?start=BQADAQADQhEAAqDtgEc3bO3u8eHNTxYE",
+            adUrls: [
+                "https://www.effectivegatecpm.com/i9q1y7nvv?key=ac01236d2cc3992387c55fe1f97dce50",
+                "https://www.effectivegatecpm.com/zv20wxy0?key=fc320d9845eafdf29ef8f630bff6b872",
+                "https://www.effectivegatecpm.com/tzrrbk2dri?key=b3b5c86d1cf0f8c4ebca90d9cfe0f4aa"
+            ],
+            instructionsText: "රැදි සිටින්න …… : Link එක ලබා ගැනිම සදහා දැන්විම් 03ක් නැරඹිම සිදුකල යුතුය",
+            engagementSimulation: true,
+            clickDelay: 5
+        };
+        
+        // Load configuration
+        let CONFIG = JSON.parse(localStorage.getItem('adUnlockerConfig')) || DEFAULT_CONFIG;
+        
+        // State variables
+        let currentAd = 1;
+        let timeLeft = CONFIG.timePerAd;
+        let timerInterval;
+        let adsCompleted = 0;
+        let isTransitioning = false;
+        let autoEngagementEnabled = CONFIG.engagementSimulation;
+        let engagementInterval;
+        let autoClickInterval;
+        let autoClickCount = 0;
+        let clickDelay = CONFIG.clickDelay;
+        let autoClickTimer = 0;
+        
+        // DOM Elements
+        const timerElement = document.getElementById('timer');
+        const currentAdElement = document.getElementById('currentAd');
+        const totalAdsDisplay = document.getElementById('totalAdsDisplay');
+        const adFrame = document.getElementById('adFrame');
+        const adContainer = document.getElementById('adContainer');
+        const adOverlay = document.getElementById('adOverlay');
+        const overlayText = document.getElementById('overlayText');
+        const loadingProgress = document.getElementById('loadingProgress');
+        const unlockButtonHeader = document.getElementById('unlockButtonHeader');
+        const instructionsPanel = document.getElementById('instructionsPanel');
+        const instructionsTextDisplay = document.getElementById('instructionsTextDisplay');
+        const adIndicators = document.getElementById('adIndicators');
+        const configSection = document.getElementById('configSection');
+        const configToggle = document.getElementById('configToggle');
+        const saveConfigBtn = document.getElementById('saveConfig');
+        const closeConfigBtn = document.getElementById('closeConfig');
+        const engagementStatus = document.getElementById('engagementStatus');
+        const tiktokMessage = document.getElementById('tiktokMessage');
+        
+        // Initialize
+        function initContentLocker() {
+            applyConfiguration();
+            
+            // Show instructions briefly
+            instructionsPanel.classList.add('show');
+            setTimeout(() => {
+                instructionsPanel.classList.remove('show');
+                loadAd();
+            }, 2500);
+            
+            startTimer();
+            
+            if (autoEngagementEnabled) {
+                engagementStatus.classList.remove('hidden');
+                adContainer.classList.add('auto-click-active');
             }
-
-            // function to load video from "tiktok url" (simulated)
-            function loadVideoFromTikTok(inputUrl) {
-                if (!inputUrl || !inputUrl.includes('tiktok.com')) {
-                    // if not tiktok, we still show a demo video (graceful fallback)
-                    console.log('non-tiktok or empty, using fallback demo');
+        }
+        
+        // Apply configuration
+        function applyConfiguration() {
+            totalAdsDisplay.textContent = CONFIG.totalAds;
+            instructionsTextDisplay.textContent = CONFIG.instructionsText;
+            
+            timeLeft = CONFIG.timePerAd;
+            timerElement.textContent = timeLeft.toString().padStart(2, '0');
+            
+            autoEngagementEnabled = CONFIG.engagementSimulation;
+            clickDelay = CONFIG.clickDelay;
+            
+            generateIndicators();
+        }
+        
+        // Generate indicators
+        function generateIndicators() {
+            adIndicators.innerHTML = '';
+            for (let i = 1; i <= CONFIG.totalAds; i++) {
+                const indicator = document.createElement('div');
+                indicator.className = 'ad-indicator';
+                indicator.id = `indicator${i}`;
+                adIndicators.appendChild(indicator);
+            }
+        }
+        
+        // Get indicator
+        function getIndicator(index) {
+            return document.getElementById(`indicator${index}`);
+        }
+        
+        // Check if URL is TikTok
+        function isTikTokUrl(url) {
+            return url.includes('tiktok.com');
+        }
+        
+        // Handle TikTok URL specially
+        function handleTikTokUrl(url) {
+            // Show TikTok message
+            tiktokMessage.classList.add('show');
+            setTimeout(() => {
+                tiktokMessage.classList.remove('show');
+            }, 3000);
+            
+            // Try to open TikTok directly
+            try {
+                // Create a hidden anchor to handle the URL
+                const link = document.createElement('a');
+                link.href = url;
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } catch (e) {
+                console.log('TikTok open error:', e);
+            }
+            
+            // Also try to open via window.open as fallback
+            setTimeout(() => {
+                try {
+                    window.open(url, '_blank', 'noopener,noreferrer');
+                } catch (e) {}
+            }, 500);
+            
+            return true;
+        }
+        
+        // Load ad
+        function loadAd() {
+            isTransitioning = true;
+            autoClickTimer = 0;
+            autoClickCount = 0;
+            
+            adOverlay.classList.remove('hidden');
+            overlayText.textContent = `Loading ad ${currentAd} of ${CONFIG.totalAds}...`;
+            loadingProgress.style.width = '0%';
+            
+            setTimeout(() => {
+                const adUrl = CONFIG.adUrls[currentAd - 1] || CONFIG.adUrls[0];
+                
+                // Set iframe source
+                try {
+                    adFrame.src = adUrl;
+                } catch (e) {
+                    console.log('Iframe src error:', e);
                 }
-
-                // in a real service you'd call an API, but here we serve a static demo mp4
-                // to simulate a real download website, we show a video and enable download.
-                const videoUrl = getDemoVideoForUrl(inputUrl || 'default');
-
-                // update video source
-                videoSource.src = videoUrl;
-                videoPlayer.load(); // important for safari/chrome
-
-                // when video is ready we show container
-                videoPlayer.oncanplay = function() {
-                    placeholder.classList.add('hidden');
-                    videoContainer.classList.remove('hidden');
+                
+                adFrame.onload = () => {
+                    setTimeout(() => {
+                        adOverlay.classList.add('hidden');
+                        isTransitioning = false;
+                        updateOverlayForNextAd();
+                        
+                        if (autoEngagementEnabled) {
+                            startEngagementSimulation();
+                        }
+                    }, 500);
                 };
-
-                // if error (e.g., network issue) keep placeholder with message?
-                videoPlayer.onerror = function() {
-                    alert('Video preview could not be loaded, but you can still try the download (demo).');
-                    // still show container? maybe, but show something.
-                    placeholder.classList.add('hidden');
-                    videoContainer.classList.remove('hidden');
+                
+                adFrame.onerror = () => {
+                    // If iframe fails, still proceed
+                    setTimeout(() => {
+                        adOverlay.classList.add('hidden');
+                        isTransitioning = false;
+                    }, 1000);
                 };
-
-                // download link: create an anchor and simulate download
-                downloadBtn.onclick = function(e) {
-                    e.preventDefault();
-                    // we trigger download via a temporary link
+                
+                updateIndicators();
+                startTimer();
+                startAutoClickTimer();
+            }, 1000);
+        }
+        
+        // Update overlay text
+        function updateOverlayForNextAd() {
+            if (currentAd < CONFIG.totalAds) {
+                overlayText.textContent = `Ad ${currentAd + 1} starting...`;
+            } else {
+                overlayText.textContent = "Final ad completed!";
+            }
+        }
+        
+        // Start timer
+        function startTimer() {
+            clearInterval(timerInterval);
+            timeLeft = CONFIG.timePerAd;
+            updateTimerDisplay();
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                const progress = ((CONFIG.timePerAd - timeLeft) / CONFIG.timePerAd) * 100;
+                loadingProgress.style.width = `${progress}%`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    completeCurrentAd();
+                }
+            }, 1000);
+        }
+        
+        // Start auto-click timer
+        function startAutoClickTimer() {
+            clearInterval(autoClickInterval);
+            autoClickTimer = 0;
+            
+            autoClickInterval = setInterval(() => {
+                autoClickTimer++;
+                
+                if (autoClickTimer >= clickDelay && autoEngagementEnabled && !isTransitioning) {
+                    performAutoClick();
+                    autoClickTimer = 0;
+                }
+            }, 1000);
+        }
+        
+        // Perform auto-click
+        function performAutoClick() {
+            if (isTransitioning || !autoEngagementEnabled) return;
+            
+            autoClickCount++;
+            simulateMouseMovement();
+            
+            if (autoClickCount <= 2) {
+                openAdInNewTab();
+            }
+            
+            engagementStatus.innerHTML = `<i class="fas fa-robot"></i> Click ${autoClickCount}/2`;
+            
+            if (autoClickCount >= 2) {
+                setTimeout(() => {
+                    autoClickCount = 0;
+                    engagementStatus.innerHTML = `<i class="fas fa-robot"></i> Auto Active`;
+                }, 2000);
+            }
+        }
+        
+        // Simulate mouse movement
+        function simulateMouseMovement() {
+            const rect = adContainer.getBoundingClientRect();
+            
+            const randomX = rect.left + rect.width / 2 + (Math.random() * 60 - 30);
+            const randomY = rect.top + rect.height / 2 + (Math.random() * 60 - 30);
+            
+            const moveEvent = new MouseEvent('mousemove', {
+                view: window,
+                bubbles: true,
+                cancelable: true,
+                clientX: randomX,
+                clientY: randomY
+            });
+            
+            adContainer.dispatchEvent(moveEvent);
+        }
+        
+        // Open ad in new tab
+        function openAdInNewTab() {
+            const currentAdUrl = CONFIG.adUrls[currentAd - 1];
+            if (!currentAdUrl) return;
+            
+            // Special handling for TikTok
+            if (isTikTokUrl(currentAdUrl)) {
+                handleTikTokUrl(currentAdUrl);
+                return;
+            }
+            
+            // Regular URL handling
+            try {
+                const newTab = window.open(currentAdUrl, '_blank', 'noopener,noreferrer');
+                
+                if (newTab) {
+                    const closeDelay = 5000 + Math.random() * 3000;
+                    setTimeout(() => {
+                        try {
+                            newTab.close();
+                        } catch (e) {}
+                    }, closeDelay);
+                }
+            } catch (e) {
+                // Fallback: try to open via anchor
+                try {
                     const link = document.createElement('a');
-                    link.href = videoUrl;
-                    // extract filename from url or generic
-                    const filename = 'tiktok_video_' + Date.now() + '.mp4';
-                    link.download = filename;   // download attribute
+                    link.href = currentAdUrl;
+                    link.target = '_blank';
+                    link.rel = 'noopener noreferrer';
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
-                };
+                } catch (err) {}
             }
-
-            // reset to placeholder (if needed)
-            function resetToPlaceholder() {
-                placeholder.classList.remove('hidden');
-                videoContainer.classList.add('hidden');
-                videoSource.src = '';  // clear source
-                videoPlayer.load();
-            }
-
-            // event listener for fetch button
-            fetchBtn.addEventListener('click', function() {
-                const url = urlInput.value.trim();
-                if (url === '') {
-                    alert('Please paste a TikTok video link');
-                    return;
+        }
+        
+        // Start engagement simulation
+        function startEngagementSimulation() {
+            if (engagementInterval) clearInterval(engagementInterval);
+            
+            engagementInterval = setInterval(() => {
+                if (!isTransitioning && autoEngagementEnabled) {
+                    simulateMouseMovement();
                 }
-                // show loading state (optional)
-                fetchBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> loading';
-                fetchBtn.disabled = true;
-
-                // simulate network delay (realistic)
+            }, 2000);
+        }
+        
+        // Update timer display
+        function updateTimerDisplay() {
+            timerElement.textContent = timeLeft.toString().padStart(2, '0');
+        }
+        
+        // Update indicators
+        function updateIndicators() {
+            for (let i = 1; i <= CONFIG.totalAds; i++) {
+                const indicator = getIndicator(i);
+                if (indicator) {
+                    indicator.classList.remove('active', 'completed');
+                    
+                    if (i === currentAd) {
+                        indicator.classList.add('active');
+                    } else if (i < currentAd) {
+                        indicator.classList.add('completed');
+                    }
+                }
+            }
+        }
+        
+        // Complete current ad
+        function completeCurrentAd() {
+            if (engagementInterval) clearInterval(engagementInterval);
+            if (autoClickInterval) clearInterval(autoClickInterval);
+            
+            adsCompleted++;
+            currentAdElement.textContent = currentAd;
+            
+            if (adsCompleted >= CONFIG.totalAds) {
+                allAdsCompleted();
+                return;
+            }
+            
+            currentAd++;
+            
+            adOverlay.classList.remove('hidden');
+            overlayText.textContent = `Ad ${currentAd} starting...`;
+            
+            let countdown = 2;
+            const countdownInterval = setInterval(() => {
+                overlayText.textContent = `Ad ${currentAd} starting in ${countdown}...`;
+                countdown--;
+                
+                if (countdown < 0) {
+                    clearInterval(countdownInterval);
+                    loadAd();
+                }
+            }, 1000);
+        }
+        
+        // All ads completed
+        function allAdsCompleted() {
+            if (engagementInterval) clearInterval(engagementInterval);
+            if (autoClickInterval) clearInterval(autoClickInterval);
+            
+            engagementStatus.classList.add('hidden');
+            adContainer.classList.remove('auto-click-active');
+            
+            adFrame.src = "about:blank";
+            
+            adOverlay.classList.remove('hidden');
+            overlayText.textContent = "All ads completed! Click GO TO VIDEO";
+            loadingProgress.style.width = "100%";
+            
+            timerElement.textContent = "00";
+            timerElement.style.color = "#10b981";
+            
+            for (let i = 1; i <= CONFIG.totalAds; i++) {
+                const indicator = getIndicator(i);
+                if (indicator) {
+                    indicator.classList.add('completed');
+                    indicator.classList.remove('active');
+                }
+            }
+            
+            unlockButtonHeader.disabled = false;
+            unlockButtonHeader.innerHTML = '<i class="fas fa-unlock"></i> GO TO VIDEO';
+            unlockButtonHeader.classList.add('unlocked');
+            
+            currentAdElement.textContent = CONFIG.totalAds;
+            currentAdElement.style.color = "#10b981";
+        }
+        
+        // Redirect to video
+        function redirectToVideoUrl() {
+            unlockButtonHeader.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Opening...';
+            unlockButtonHeader.disabled = true;
+            
+            adOverlay.classList.remove('hidden');
+            overlayText.textContent = "Opening video...";
+            
+            setTimeout(() => {
+                const videoUrl = CONFIG.videoUrl;
+                
+                // Check if it's TikTok
+                if (isTikTokUrl(videoUrl)) {
+                    handleTikTokUrl(videoUrl);
+                } else {
+                    window.open(videoUrl, '_blank', 'noopener,noreferrer');
+                }
+                
+                overlayText.textContent = "Video opened! Check new tab";
+                
                 setTimeout(() => {
-                    loadVideoFromTikTok(url);
-                    fetchBtn.innerHTML = '<i class="fas fa-download"></i> Get video';
-                    fetchBtn.disabled = false;
-                }, 700);
-            });
-
-            // sample links click handler
-            document.querySelectorAll('.sample-link').forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const sampleUrl = this.getAttribute('data-sample');
-                    urlInput.value = sampleUrl;
-                    // trigger fetch automatically (nice ux)
-                    fetchBtn.click();
-                });
-            });
-
-            // optional: load a default video on page load so it's not empty
-            window.addEventListener('load', function() {
-                // we set a placeholder, but we can also show a sample video (makes website feel alive)
-                // but we keep placeholder as default. 
-                // However let's prefill input with a sample so user just clicks.
-                urlInput.value = 'https://www.tiktok.com/@scout2015/video/7123456789012345678';
-                // We don't auto fetch, just to keep it clean (user can click get video)
-                // but if you want auto-load after 0.5s, you can uncomment:
-                // setTimeout(() => fetchBtn.click(), 200);
-            });
-
-            // if user hits enter in input
-            urlInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    fetchBtn.click();
-                }
-            });
-
-            // manual reset to placeholder function can be used but not needed.
-
-            // Note: for mobile, ensure video plays nicely.
-        })();
+                    unlockButtonHeader.innerHTML = '<i class="fas fa-check"></i> OPENED';
+                    unlockButtonHeader.disabled = false;
+                }, 1500);
+            }, 1000);
+        }
+        
+        // Toggle config panel
+        function toggleConfigPanel() {
+            if (configSection.classList.contains('show')) {
+                configSection.classList.remove('show');
+            } else {
+                document.getElementById('totalAds').value = CONFIG.totalAds;
+                document.getElementById('timePerAd').value = CONFIG.timePerAd;
+                document.getElementById('videoUrl').value = CONFIG.videoUrl;
+                document.getElementById('adUrl1').value = CONFIG.adUrls[0] || '';
+                document.getElementById('adUrl2').value = CONFIG.adUrls[1] || '';
+                document.getElementById('adUrl3').value = CONFIG.adUrls[2] || '';
+                document.getElementById('instructionsText').value = CONFIG.instructionsText;
+                document.getElementById('engagementSimulation').value = CONFIG.engagementSimulation;
+                document.getElementById('clickDelay').value = CONFIG.clickDelay;
+                
+                configSection.classList.add('show');
+            }
+        }
+        
+        // Save configuration
+        function saveConfiguration() {
+            const newConfig = {
+                totalAds: parseInt(document.getElementById('totalAds').value) || 3,
+                timePerAd: parseInt(document.getElementById('timePerAd').value) || 10,
+                videoUrl: document.getElementById('videoUrl').value || DEFAULT_CONFIG.videoUrl,
+                adUrls: [
+                    document.getElementById('adUrl1').value || DEFAULT_CONFIG.adUrls[0],
+                    document.getElementById('adUrl2').value || DEFAULT_CONFIG.adUrls[1],
+                    document.getElementById('adUrl3').value || DEFAULT_CONFIG.adUrls[2]
+                ],
+                instructionsText: document.getElementById('instructionsText').value || DEFAULT_CONFIG.instructionsText,
+                engagementSimulation: document.getElementById('engagementSimulation').value === 'true',
+                clickDelay: parseInt(document.getElementById('clickDelay').value) || 5
+            };
+            
+            localStorage.setItem('adUnlockerConfig', JSON.stringify(newConfig));
+            CONFIG = newConfig;
+            resetLocker();
+            configSection.classList.remove('show');
+        }
+        
+        // Reset locker
+        function resetLocker() {
+            clearInterval(timerInterval);
+            clearInterval(engagementInterval);
+            clearInterval(autoClickInterval);
+            
+            currentAd = 1;
+            timeLeft = CONFIG.timePerAd;
+            adsCompleted = 0;
+            isTransitioning = false;
+            autoClickCount = 0;
+            autoEngagementEnabled = CONFIG.engagementSimulation;
+            clickDelay = CONFIG.clickDelay;
+            
+            unlockButtonHeader.disabled = true;
+            unlockButtonHeader.innerHTML = '<i class="fas fa-lock"></i> GO TO VIDEO';
+            unlockButtonHeader.classList.remove('unlocked');
+            engagementStatus.classList.add('hidden');
+            adContainer.classList.remove('auto-click-active');
+            
+            applyConfiguration();
+            initContentLocker();
+        }
+        
+        // Event listeners
+        unlockButtonHeader.addEventListener('click', redirectToVideoUrl);
+        configToggle.addEventListener('click', toggleConfigPanel);
+        saveConfigBtn.addEventListener('click', saveConfiguration);
+        closeConfigBtn.addEventListener('click', () => {
+            configSection.classList.remove('show');
+        });
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', initContentLocker);
+        
+        // Handle touch events for mobile
+        document.addEventListener('touchstart', function() {}, {passive: true});
     </script>
-    <!-- small note: this is a demo concept – real tiktok download requires backend/api -->
-    <!-- but frontend interface fully functional with sample videos. looks professional and simple. -->
 </body>
 </html>
