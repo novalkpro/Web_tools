@@ -1,413 +1,54 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grid · 100 banner ads · responsive</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background: #f4f6fa;
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-            padding: 2rem 1.5rem;
-        }
-
-        .page-container {
-            max-width: 1600px;
-            margin: 0 auto;
-        }
-
-        h1 {
-            font-size: 1.9rem;
-            font-weight: 500;
-            letter-spacing: -0.02em;
-            margin-bottom: 1rem;
-            color: #1e293b;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            flex-wrap: wrap;
-        }
-
-        h1 small {
-            font-size: 1rem;
-            font-weight: 400;
-            background: #e9eef3;
-            color: #334155;
-            padding: 0.2rem 1rem;
-            border-radius: 40px;
-            border: 1px solid #d1d9e6;
-        }
-
-        .info-bar {
-            background: white;
-            border-radius: 2rem;
-            padding: 0.9rem 1.8rem;
-            margin-bottom: 2.5rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            border: 1px solid #e2e8f0;
-            font-size: 1rem;
-        }
-
-        .badge {
-            background: #1f2a41;
-            color: white;
-            font-weight: 500;
-            padding: 0.3rem 1rem;
-            border-radius: 30px;
-            font-size: 0.9rem;
-        }
-
-        .grid-note {
-            display: flex;
-            gap: 2rem;
-            flex-wrap: wrap;
-            color: #2c3e50;
-        }
-
-        .grid-note span {
-            background: #eef2f6;
-            padding: 0.2rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.9rem;
-        }
-
-        /* banner grid — auto‑adjusting columns */
-        .banner-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 1.8rem 1rem;
-            justify-items: center;
-            align-items: center;
-            margin-top: 0.5rem;
-        }
-
-        /* individual banner card (for visual separation) */
-        .banner-card {
-            background: transparent;
-            width: 100%;
-            max-width: 728px;          /* native banner width */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0 auto;
-            transition: transform 0.1s ease;
-        }
-
-        /* the ad container – matches exact 728x90 iframe ratio */
-        .ad-container {
-            width: 100%;
-            max-width: 728px;
-            aspect-ratio: 728 / 90;    /* 8.0888… → keeps 90 height proportion */
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 8px 18px -6px rgba(0,20,40,0.12), 0 0 0 1px rgba(0,0,0,0.02) inset;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        /* style the iframe that comes from the invoke script */
-        .ad-container iframe {
-            border: none;
-            width: 100% !important;
-            height: 100% !important;
-            border-radius: 10px;
-            background: #fafcff;
-        }
-
-        /* fallback while ad loads / placeholder (will be replaced by script) */
-        .ad-placeholder {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(145deg, #f0f4fa, #ffffff);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.85rem;
-            color: #5f6c84;
-            border-radius: 10px;
-            border: 1px dashed #b9c5d9;
-        }
-
-        /* small counter label (optional, minimalist) */
-        .banner-number {
-            font-size: 0.7rem;
-            color: #8b9ab0;
-            margin-top: 0.2rem;
-            text-align: center;
-            opacity: 0.7;
-        }
-
-        /* absolutely sure the iframe respects 728x90 ratio */
-        .ad-container iframe[src*="highperformanceformat"],
-        .ad-container iframe[src*="openjs"] {
-            width: 100% !important;
-            height: 100% !important;
-            max-width: 728px;
-            max-height: 90px;
-            object-fit: fill;
-        }
-
-        /* simple pagination hint (just one page, but shows we have 100) */
-        .pagination-info {
-            margin-top: 3.5rem;
-            text-align: center;
-            border-top: 1px dashed #cad5e2;
-            padding-top: 2rem;
-            font-size: 0.95rem;
-            color: #4e627c;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .pagination-info .pages {
-            display: flex;
-            gap: 0.5rem;
-            background: white;
-            padding: 0.3rem 1rem;
-            border-radius: 40px;
-            border: 1px solid #dde3ec;
-        }
-
-        .page-dot {
-            display: inline-block;
-            width: 32px;
-            height: 32px;
-            background: #1f2a41;
-            color: white;
-            border-radius: 40px;
-            line-height: 32px;
-            text-align: center;
-            font-weight: 500;
-        }
-
-        .page-dot.inactive {
-            background: #e2eaf3;
-            color: #556b85;
-        }
-
-        .footer-note {
-            background: #eef3f9;
-            padding: 0.6rem 1.5rem;
-            border-radius: 40px;
-            font-size: 0.9rem;
-        }
-
-        /* small screens adjustment */
-        @media (max-width: 640px) {
-            body { padding: 1rem 0.8rem; }
-            h1 { font-size: 1.5rem; }
-            .banner-grid { gap: 1rem; }
-            .info-bar { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
-        }
-    </style>
-</head>
-<body>
-<div class="page-container">
-
-    <h1>
-        📋 banner grid · 100 ads
-        <small>auto‑fit · 728x90</small>
-    </h1>
-
-    <div class="info-bar">
-        <div class="badge">⚡ your script · 100 repeats</div>
-        <div class="grid-note">
-            <span>📐 responsive columns</span>
-            <span>🔄 iframe auto‑scale</span>
-            <span>🧩 1 page / 100 banners</span>
-        </div>
-    </div>
-
-    <!-- ========== BANNER GRID ========== -->
-    <!-- will contain exactly 100 ads using your personal script -->
-    <div class="banner-grid" id="bannerGrid"></div>
-
-    <!-- subtle pagination indicator (only one page with 100 items) -->
-    <div class="pagination-info">
-        <div class="pages">
-            <span class="page-dot">1</span>
-            <span class="page-dot inactive">2</span>
-            <span class="page-dot inactive">3</span>
-            <span class="page-dot inactive">⋯</span>
-        </div>
-        <div class="footer-note">
-            ✅ showing 100 banners · each runs your personal ad code
-        </div>
-    </div>
-</div>
-
-<!-- your original script (loaded once, but we need multiple invocations) -->
-<!-- we will reuse the 'atOptions' and invoke script multiple times by inserting separate divs with the same logic. 
-     However the original invoke.js builds content based on the global atOptions variable.
-     To make it work for each ad individually we need to either:
-     a) Use multiple iframes with the same 'key' manually (invoke.js creates one iframe per call)
-     b) Call the invoke script multiple times by injecting it repeatedly with a fresh 'atOptions'.
-     We'll do the safe method: For each banner we create a unique script environment with a copy of atOptions and the invoke script. -->
-
-<!-- the core config object (template) -->
-<script>
-    (function() {
-        // -------------------------------------------------------------
-        // personal banner config (exactly as provided)
-        const baseAtOptions = {
-            'key': '89360622214d60f2813d80981bcd8062',
-            'format': 'iframe',
-            'height': 90,
-            'width': 728,
-            'params': {}
-        };
-
-        // number of banners = 100
-        const TOTAL_BANNERS = 100;
-        const grid = document.getElementById('bannerGrid');
-
-        if (!grid) return;
-
-        // ---- helper to create one banner slot with its own script context ----
-        function createBannerSlot(index) {
-            // container card
-            const card = document.createElement('div');
-            card.className = 'banner-card';
-
-            // inner ad container (keeps aspect ratio)
-            const adDiv = document.createElement('div');
-            adDiv.className = 'ad-container';
-            adDiv.setAttribute('data-banner-id', `banner-${index}`);
-
-            // temporary placeholder (will be replaced when script runs)
-            const placeholder = document.createElement('div');
-            placeholder.className = 'ad-placeholder';
-            placeholder.innerText = `📢 banner ${index + 1} · 728x90`;
-            adDiv.appendChild(placeholder);
-
-            card.appendChild(adDiv);
-
-            // tiny number below (optional)
-            const numberLabel = document.createElement('div');
-            numberLabel.className = 'banner-number';
-            numberLabel.innerText = `#${index + 1}`;
-            card.appendChild(numberLabel);
-
-            return { card, adDiv };
-        }
-
-        // -------------------------------------------------------------
-        // we need to execute the invoke script inside each banner container.
-        // The original script uses document.write, which is problematic after page load.
-        // BUT the invoke.js from "highperformanceformat.com" is designed to create an iframe
-        // using the global atOptions. It usually writes into a specific div? Actually,
-        // looking at typical 'invoke.js' patterns: They look for a div with class or id?
-        // However the standard 'atOptions' + 'invoke.js' works by replacing a placeholder
-        // or using document.write. To be safe and avoid document.write late, we can create
-        // a new iframe manually with the proper src? But the provided script is the official
-        // invocation – the best method is to create a new script that sets a local atOptions
-        // and then loads invoke.js, but they all share the same global atOptions.
-        // We can use a closure to set window.atOptions just before injecting the script,
-        // but careful: asynchronous loading may cause race conditions.
-        // Better approach: create a new iframe with the src pointing to the ad server directly.
-        // However the exact ad tag format might be custom. For reliability, we will replicate
-        // the method used by the invoke script: insert a div with the appropriate key.
-        // Many such networks use: "https://www.highperformanceformat.com/KEY/invoke.js" and they look for
-        // an element with id "at_container". But we don't have that.
-        // After research: the standard invoke script from highperformanceformat expects
-        // a div with id "at_container" or it creates a new one? Actually the original
-        // script (invoke.js) does this: It checks for 'atOptions' and then appends an iframe.
-        // We can force each banner to run its own isolated version by using a fresh script tag
-        // that re-assigns atOptions and loads invoke.js, but due to asynchronicity we need a
-        // separate script context. The simplest and safest: load the invoke script inside a new 
-        // iframe sandbox? That's overkill.
-        //
-        // Let's go with a solid method: we create an iframe and set its srcdoc to a minimal HTML
-        // that includes your atOptions and the invoke script. That way each banner is fully isolated,
-        // respects the 728x90 dimensions, and no conflict.
-        // -------------------------------------------------------------
-
-        function buildIframeSrcDoc(index) {
-            const config = { ...baseAtOptions };  // fresh copy
-            // key remains the same, but we can also leave as is.
-
-            // generate a very simple HTML document that will hold just the banner
-            return `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <meta charset="UTF-8">
-                    <style>
-                        body { margin: 0; padding: 0; background: transparent; overflow: hidden; }
-                        #ad-container { width: 728px; height: 90px; margin: 0; padding: 0; }
-                    </style>
-                </head>
-                <body>
-                    <div id="ad-container"></div>
-                    <script>
-                        // pass the exact atOptions
-                        window.atOptions = ${JSON.stringify(config)};
-                        // optionally specify container? The invoke script usually writes into the page.
-                        // We'll just load it and it will write into this document.
-                    <\/script>
-                    <script src="https://www.highperformanceformat.com/89360622214d60f2813d80981bcd8062/invoke.js"><\/script>
-                </body>
-                </html>
-            `;
-        }
-
-        // clean the grid and fill with 100 banners using iframe srcdoc (isolated)
-        grid.innerHTML = ''; // remove any existing
-
-        for (let i = 0; i < TOTAL_BANNERS; i++) {
-            const { card, adDiv } = createBannerSlot(i);
-
-            // create an iframe that will host the banner (srcdoc method)
-            const iframe = document.createElement('iframe');
-            iframe.setAttribute('frameborder', '0');
-            iframe.setAttribute('scrolling', 'no');
-            iframe.setAttribute('marginheight', '0');
-            iframe.setAttribute('marginwidth', '0');
-            iframe.setAttribute('allowtransparency', 'true');
-            iframe.style.width = '100%';
-            iframe.style.height = '100%';
-            iframe.style.display = 'block';
-            iframe.style.border = 'none';
-            iframe.style.overflow = 'hidden';
-
-            // generate the HTML content specific to this banner
-            const srcdoc = buildIframeSrcDoc(i);
-            iframe.srcdoc = srcdoc;
-
-            // clear placeholder and attach iframe
-            adDiv.innerHTML = '';  // remove placeholder
-            adDiv.appendChild(iframe);
-
-            grid.appendChild(card);
-        }
-
-        // optional fallback if srcdoc not supported (old edge) – but all modern browsers support it.
-        // for legacy we could set src with javascript, but not needed.
-    })();
-</script>
-
-<!-- brief explanation (works 100%) -->
-<noscript>
-    <div style="background: #f44336; color:white; padding:1rem;">JavaScript required to render banner grid.</div>
-</noscript>
-
-<!-- additional note: the banners are fully isolated, each runs your personal script.
-     the grid automatically adjusts to screen width, while each banner keeps 728x90 ratio.
-     Perfect for showing exactly 100 ads per page.
--->
-</body>
+<html>
+    <body>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+<script> atOptions = { 'key' : '519bb313085d3bead774234c9ac97b3f', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> <script src="https://www.highperformanceformat.com/519bb313085d3bead774234c9ac97b3f/invoke.js"></script>
+    </body>
 </html>
